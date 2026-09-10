@@ -16,7 +16,7 @@ flowchart LR
     H -->|4. Atomic Tx: ZapRun + ZapRunOutbox| DB
 
     P[Outbox Processor] -->|5. Polls ZapRunOutbox| DB
-    P -->|6. Pushes Stage 0 Event| KAFKA[[Kafka: zap-events]]
+    P -->|6. Pushes Stage 0 Event| KAFKA[[Kafka: automate-events]]
     P -->|7. Deletes Outbox row| DB
 
     W[Worker] -->|8. Consumes Stage 0| KAFKA
@@ -38,10 +38,10 @@ flowchart LR
 
 3. **`processor` (Background Service)**:
    - Transactional outbox polling daemon.
-   - Queries batches from `ZapRunOutbox`, publishes `{ zapRunId, stage: 0 }` to Kafka topic `zap-events`, and cleans up processed outbox records.
+   - Queries batches from `ZapRunOutbox`, publishes `{ zapRunId, stage: 0 }` to Kafka topic `automate-events`, and cleans up processed outbox records.
 
 4. **`worker` (Kafka Consumer)**:
-   - Consumes events from `zap-events`.
+   - Consumes events from `automate-events`.
    - Sequentially executes actions defined by `sortingOrder`.
    - Resolves template variables like `{comment.amount}` or `{comment.email}` from trigger metadata.
    - Dispatches Email (via Nodemailer) with dynamic templating.

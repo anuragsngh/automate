@@ -5,7 +5,7 @@ import { pollGoogleCalendarTriggers } from "./poller";
 
 dotenv.config();
 
-const TOPIC_NAME = process.env.KAFKA_TOPIC || "zap-events";
+const TOPIC_NAME = process.env.KAFKA_TOPIC || "automate-events";
 const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
 
 const client = new PrismaClient();

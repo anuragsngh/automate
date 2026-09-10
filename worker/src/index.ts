@@ -7,7 +7,7 @@ import { runAIAgentNewsSummary } from "./agent";
 
 dotenv.config();
 
-const TOPIC_NAME = process.env.KAFKA_TOPIC || "zap-events";
+const TOPIC_NAME = process.env.KAFKA_TOPIC || "automate-events";
 const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
 
 const prismaClient = new PrismaClient();
