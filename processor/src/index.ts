@@ -20,7 +20,7 @@ const kafkaConfig: any = {
 };
 
 if (process.env.KAFKA_SASL_USERNAME && process.env.KAFKA_SASL_PASSWORD) {
-  kafkaConfig.ssl = true;
+  kafkaConfig.ssl = { rejectUnauthorized: false };
   kafkaConfig.sasl = {
     mechanism: process.env.KAFKA_SASL_MECHANISM || "scram-sha-256",
     username: process.env.KAFKA_SASL_USERNAME,
