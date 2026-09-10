@@ -6,6 +6,7 @@ import { triggerRouter } from "./router/trigger";
 import { actionRouter } from "./router/action";
 import { PORT } from "./config";
 import { prismaClient } from "./db";
+import { startBackgroundEngine } from "./worker/runner";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -73,4 +74,5 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Primary Backend is running on port ${PORT}`);
+  startBackgroundEngine(prismaClient);
 });
