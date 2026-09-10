@@ -1,0 +1,80 @@
+// Prisma schema file for Processor service
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  zaps      Zap[]
+}
+
+model Zap {
+  id        String    @id @default(uuid())
+  triggerId String
+  userId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  trigger   Trigger?
+  actions   Action[]
+  zapRuns   ZapRun[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Trigger {
+  id        String           @id @default(uuid())
+  zapId     String           @unique
+  triggerId String
+  metadata  Json             @default("{}")
+  type      AvailableTrigger @relation(fields: [triggerId], references: [id])
+  zap       Zap              @relation(fields: [zapId], references: [id], onDelete: Cascade)
+}
+
+model Action {
+  id           String          @id @default(uuid())
+  zapId        String
+  zap          Zap             @relation(fields: [zapId], references: [id], onDelete: Cascade)
+  actionId     String
+  metadata     Json            @default("{}")
+  type         AvailableAction @relation(fields: [actionId], references: [id])
+  sortingOrder Int             @default(0)
+}
+
+model AvailableAction {
+  id      String   @id @default(uuid())
+  name    String
+  image   String
+  actions Action[]
+}
+
+model AvailableTrigger {
+  id       String    @id @default(uuid())
+  name     String
+  image    String
+  triggers Trigger[]
+}
+
+model ZapRun {
+  id           String        @id @default(uuid())
+  zapId        String
+  metadata     Json
+  createdAt    DateTime      @default(now())
+  zap          Zap           @relation(fields: [zapId], references: [id], onDelete: Cascade)
+  zapRunOutbox ZapRunOutbox?
+}
+
+model ZapRunOutbox {
+  id       String @id @default(uuid())
+  zapRunId String @unique
+  zapRun   ZapRun @relation(fields: [zapRunId], references: [id], onDelete: Cascade)
+}

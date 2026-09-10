@@ -1,0 +1,174 @@
+import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
+import { Kafka } from "kafkajs";
+import { parse } from "./parser";
+import { sendEmail } from "./email";
+import { runAIAgentNewsSummary } from "./agent";
+
+dotenv.config();
+
+
+const TOPIC_NAME = process.env.KAFKA_TOPIC || "zap-events";
+const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
+
+const prismaClient = new PrismaClient();
+
+const kafka = new Kafka({
+  clientId: "execution-worker",
+  brokers: BROKERS,
+  retry: {
+    initialRetryTime: 300,
+    retries: 10
+  }
+});
+
+async function main() {
+  console.log(`[Worker] Starting Execution Worker... Brokers: ${BROKERS}, Topic: ${TOPIC_NAME}`);
+
+  const consumer = kafka.consumer({ groupId: "main-worker-group" });
+  const producer = kafka.producer();
+
+  let connected = false;
+  while (!connected) {
+    try {
+      await consumer.connect();
+      await producer.connect();
+      await consumer.subscribe({ topic: TOPIC_NAME, fromBeginning: true });
+      connected = true;
+      console.log("[Worker] Connected to Kafka consumer & producer successfully!");
+    } catch (err) {
+      console.log("[Worker] Waiting for Kafka to become available... Retrying in 3 seconds.");
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+
+  await consumer.run({
+    autoCommit: false,
+    eachMessage: async ({ topic, partition, message }) => {
+      const rawValue = message.value?.toString();
+      if (!rawValue) return;
+
+      console.log(`[Worker] Received message on partition ${partition}, offset ${message.offset}: ${rawValue}`);
+
+      try {
+        const parsedValue = JSON.parse(rawValue);
+        const zapRunId: string = parsedValue.zapRunId;
+        const stage: number = parsedValue.stage ?? 0;
+
+        const zapRunDetails = await prismaClient.zapRun.findFirst({
+          where: { id: zapRunId },
+          include: {
+            zap: {
+              include: {
+                actions: {
+                  include: {
+                    type: true
+                  },
+                  orderBy: {
+                    sortingOrder: "asc"
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        if (!zapRunDetails) {
+          console.log(`[Worker] ZapRun with ID ${zapRunId} not found.`);
+          return;
+        }
+
+        const actions = zapRunDetails.zap.actions;
+        const currentAction = actions.find((x) => x.sortingOrder === stage);
+
+        if (!currentAction) {
+          console.log(`[Worker] No action found for stage ${stage} in ZapRun ${zapRunId}.`);
+          return;
+        }
+
+        const zapRunMetadata = zapRunDetails.metadata;
+        const actionMetadata = (currentAction.metadata || {}) as Record<string, any>;
+        const actionType = currentAction.type.id;
+
+        console.log(`[Worker] Executing stage ${stage}: Action '${currentAction.type.name}' (${actionType})`);
+
+        if (actionType === "ai-agent") {
+          const rawTopic = actionMetadata.topic || "trending artificial intelligence breakthroughs and model releases in the past week";
+          const resolvedTopic = parse(rawTopic, zapRunMetadata);
+
+          console.log(`[Worker] Running AI Agent Researcher for topic: "${resolvedTopic}"`);
+          const summary = await runAIAgentNewsSummary(resolvedTopic);
+
+          // Update execution metadata in DB so downstream stages (e.g. Email) can consume {ai_summary}
+          const updatedMetadata = {
+            ...(typeof zapRunMetadata === "object" && zapRunMetadata !== null ? (zapRunMetadata as Record<string, any>) : {}),
+            ai_summary: summary,
+            summary: summary,
+            research_topic: resolvedTopic
+          };
+
+          await prismaClient.zapRun.update({
+            where: { id: zapRunId },
+            data: {
+              metadata: updatedMetadata
+            }
+          });
+
+          // Update local reference in case next stage is evaluated in same execution loop
+          Object.assign(zapRunMetadata as object, updatedMetadata);
+          console.log(`[Worker] Stage ${stage} AI Agent finished. Generated ${summary.length} chars digest and updated ZapRun metadata.`);
+        } else if (actionType === "email") {
+          const rawTo = actionMetadata.email || actionMetadata.to || "";
+          const rawBody = actionMetadata.body || "";
+          const rawSubject = actionMetadata.subject || "Weekly AI News Digest";
+
+          const to = parse(rawTo, zapRunMetadata);
+          const body = parse(rawBody, zapRunMetadata);
+          const subject = parse(rawSubject, zapRunMetadata);
+
+          await sendEmail(to, body, subject);
+        } else {
+          console.log(`[Worker] Unhandled action type: ${actionType}`);
+        }
+
+        // Small delay between stages
+        await new Promise((r) => setTimeout(r, 500));
+
+        const lastStage = (actions.length || 1) - 1;
+        if (stage < lastStage) {
+          console.log(`[Worker] Re-queueing next stage (${stage + 1}) for ZapRun ${zapRunId}`);
+          await producer.send({
+            topic: TOPIC_NAME,
+            messages: [
+              {
+                key: zapRunId,
+                value: JSON.stringify({
+                  zapRunId,
+                  stage: stage + 1
+                })
+              }
+            ]
+          });
+        } else {
+          console.log(`[Worker] Workflow completely executed for ZapRun ${zapRunId} (${actions.length} action(s))`);
+        }
+
+        // Commit message offset
+        await consumer.commitOffsets([
+          {
+            topic: TOPIC_NAME,
+            partition,
+            offset: (parseInt(message.offset, 10) + 1).toString()
+          }
+        ]);
+      } catch (err) {
+        console.error(`[Worker] Error processing message:`, err);
+      }
+    }
+  });
+}
+
+main().catch((err) => {
+  console.error("[Worker] Fatal error:", err);
+  process.exit(1);
+});

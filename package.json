@@ -1,0 +1,28 @@
+{
+  "name": "automate",
+  "version": "1.0.0",
+  "description": "Full-Stack Automate platform with Event-Driven Architecture, Outbox Pattern, Kafka, PostgreSQL, and Next.js",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd primary-backend && npm install && cd ../hooks && npm install && cd ../processor && npm install && cd ../worker && npm install && cd ../frontend && npm install",
+    "db:generate": "cd primary-backend && npx prisma generate",
+    "db:migrate": "cd primary-backend && npx prisma migrate dev",
+    "db:seed": "cd primary-backend && npx tsx prisma/seed.ts",
+    "dev:backend": "cd primary-backend && npm run dev",
+    "dev:hooks": "cd hooks && npm run dev",
+    "dev:processor": "cd processor && npm run dev",
+    "dev:worker": "cd worker && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "keywords": [
+    "automate",
+    "kafka",
+    "outbox-pattern",
+    "microservices",
+    "nextjs",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC"
+}
