@@ -10,14 +10,25 @@ const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
 
 const client = new PrismaClient();
 
-const kafka = new Kafka({
+const kafkaConfig: any = {
   clientId: "outbox-processor",
   brokers: BROKERS,
   retry: {
     initialRetryTime: 300,
     retries: 10
   }
-});
+};
+
+if (process.env.KAFKA_SASL_USERNAME && process.env.KAFKA_SASL_PASSWORD) {
+  kafkaConfig.ssl = true;
+  kafkaConfig.sasl = {
+    mechanism: process.env.KAFKA_SASL_MECHANISM || "scram-sha-256",
+    username: process.env.KAFKA_SASL_USERNAME,
+    password: process.env.KAFKA_SASL_PASSWORD
+  };
+}
+
+const kafka = new Kafka(kafkaConfig);
 
 async function main() {
   console.log(`[Processor] Starting Outbox Processor & Calendar Poller... Brokers: ${BROKERS}, Topic: ${TOPIC_NAME}`);

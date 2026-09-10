@@ -12,14 +12,25 @@ const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
 
 const prismaClient = new PrismaClient();
 
-const kafka = new Kafka({
+const kafkaConfig: any = {
   clientId: "execution-worker",
   brokers: BROKERS,
   retry: {
     initialRetryTime: 300,
     retries: 10
   }
-});
+};
+
+if (process.env.KAFKA_SASL_USERNAME && process.env.KAFKA_SASL_PASSWORD) {
+  kafkaConfig.ssl = true;
+  kafkaConfig.sasl = {
+    mechanism: process.env.KAFKA_SASL_MECHANISM || "scram-sha-256",
+    username: process.env.KAFKA_SASL_USERNAME,
+    password: process.env.KAFKA_SASL_PASSWORD
+  };
+}
+
+const kafka = new Kafka(kafkaConfig);
 
 async function main() {
   console.log(`[Worker] Starting Execution Worker... Brokers: ${BROKERS}, Topic: ${TOPIC_NAME}`);
