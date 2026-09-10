@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import http from "http";
 import { PrismaClient } from "@prisma/client";
 import { Kafka } from "kafkajs";
 import { parse } from "./parser";
@@ -6,6 +7,14 @@ import { sendEmail } from "./email";
 import { runAIAgentNewsSummary } from "./agent";
 
 dotenv.config();
+
+const PORT = process.env.PORT || 3004;
+http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("worker ok");
+}).listen(PORT, () => {
+  console.log(`[Worker] Health listener running on port ${PORT}`);
+});
 
 const TOPIC_NAME = process.env.KAFKA_TOPIC || "automate-events";
 const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");

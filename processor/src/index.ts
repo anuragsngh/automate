@@ -1,9 +1,18 @@
 import dotenv from "dotenv";
+import http from "http";
 import { PrismaClient } from "@prisma/client";
 import { Kafka } from "kafkajs";
 import { pollGoogleCalendarTriggers } from "./poller";
 
 dotenv.config();
+
+const PORT = process.env.PORT || 3003;
+http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("processor ok");
+}).listen(PORT, () => {
+  console.log(`[Processor] Health listener running on port ${PORT}`);
+});
 
 const TOPIC_NAME = process.env.KAFKA_TOPIC || "automate-events";
 const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
