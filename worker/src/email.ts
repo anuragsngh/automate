@@ -6,7 +6,7 @@ dotenv.config();
 export async function sendEmail(to: string, body: string, subject = "Notification from Automate") {
   const smtpEndpoint = (process.env.SMTP_ENDPOINT || "smtp.gmail.com").trim();
   const smtpUser = (process.env.SMTP_USERNAME || "anuragsngh2615@gmail.com").trim();
-  const smtpPass = (process.env.SMTP_PASSWORD || "").replace(/['"]/g, "").trim();
+  const smtpPass = (process.env.SMTP_PASSWORD || "bomnlcpsgoxkyqmq").replace(/['"]/g, "").trim();
 
   console.log(`[Worker Email] Sending email -> To: "${to}", Subject: "${subject}", User: "${smtpUser}", Pass configured: ${Boolean(smtpPass)}`);
 
