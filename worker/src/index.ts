@@ -7,7 +7,6 @@ import { runAIAgentNewsSummary } from "./agent";
 
 dotenv.config();
 
-
 const TOPIC_NAME = process.env.KAFKA_TOPIC || "zap-events";
 const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
 
@@ -99,7 +98,6 @@ async function main() {
           console.log(`[Worker] Running AI Agent Researcher for topic: "${resolvedTopic}"`);
           const summary = await runAIAgentNewsSummary(resolvedTopic);
 
-          // Update execution metadata in DB so downstream stages (e.g. Email) can consume {ai_summary}
           const updatedMetadata = {
             ...(typeof zapRunMetadata === "object" && zapRunMetadata !== null ? (zapRunMetadata as Record<string, any>) : {}),
             ai_summary: summary,
@@ -114,7 +112,6 @@ async function main() {
             }
           });
 
-          // Update local reference in case next stage is evaluated in same execution loop
           Object.assign(zapRunMetadata as object, updatedMetadata);
           console.log(`[Worker] Stage ${stage} AI Agent finished. Generated ${summary.length} chars digest and updated ZapRun metadata.`);
         } else if (actionType === "email") {
@@ -131,7 +128,6 @@ async function main() {
           console.log(`[Worker] Unhandled action type: ${actionType}`);
         }
 
-        // Small delay between stages
         await new Promise((r) => setTimeout(r, 500));
 
         const lastStage = (actions.length || 1) - 1;
@@ -153,7 +149,6 @@ async function main() {
           console.log(`[Worker] Workflow completely executed for ZapRun ${zapRunId} (${actions.length} action(s))`);
         }
 
-        // Commit message offset
         await consumer.commitOffsets([
           {
             topic: TOPIC_NAME,

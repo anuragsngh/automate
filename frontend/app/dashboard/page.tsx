@@ -146,7 +146,7 @@ export default function Dashboard() {
     <div className="flex flex-col min-h-screen">
       <Appbar />
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-10">
-        {/* Header bar */}
+        {}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-8 border-b border-slate-200">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
@@ -165,7 +165,7 @@ export default function Dashboard() {
           </PrimaryButton>
         </div>
 
-        {/* Content */}
+        {}
         {loading ? (
           <div className="flex items-center justify-center py-24 text-slate-500">
             <div className="w-8 h-8 border-4 border-[#ff4f00] border-t-transparent rounded-full animate-spin mr-3"></div>
@@ -203,9 +203,9 @@ export default function Dashboard() {
                   key={zap.id}
                   className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6"
                 >
-                  {/* Left: Workflow Chain */}
+                  {}
                   <div className="flex items-center space-x-3">
-                    {/* Trigger Icon */}
+                    {}
                     <div
                       className={`flex items-center p-2 rounded-xl border ${
                         isCalendarTrigger
@@ -226,7 +226,7 @@ export default function Dashboard() {
 
                     <ArrowRight className="w-4 h-4 text-slate-300 shrink-0" />
 
-                    {/* Action Icons */}
+                    {}
                     <div className="flex items-center space-x-2">
                       {zap.actions.map((act, idx) => (
                         <div key={act.id} className="flex items-center space-x-2">
@@ -256,7 +256,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Middle: Trigger Info / Controls */}
+                  {}
                   <div className="flex items-center flex-wrap gap-2 w-full lg:w-auto">
                     {isCalendarTrigger ? (
                       <div className="flex items-center gap-2">
@@ -308,7 +308,7 @@ export default function Dashboard() {
                     )}
                   </div>
 
-                  {/* Right Actions */}
+                  {}
                   <div className="flex items-center space-x-2 w-full lg:w-auto justify-end">
                     <Link
                       href={`/zap/${zap.id}`}

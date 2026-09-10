@@ -1,4 +1,4 @@
-// Prisma schema file for Worker service
+
 
 generator client {
   provider = "prisma-client-js"

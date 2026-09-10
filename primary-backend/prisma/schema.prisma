@@ -1,4 +1,4 @@
-// Prisma schema file for Zapier clone
+
 
 generator client {
   provider = "prisma-client-js"

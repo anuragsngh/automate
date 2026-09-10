@@ -3,9 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { Kafka } from "kafkajs";
 import { pollGoogleCalendarTriggers } from "./poller";
 
-// Reloaded with 127.0.0.1
 dotenv.config();
-
 
 const TOPIC_NAME = process.env.KAFKA_TOPIC || "zap-events";
 const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
@@ -42,7 +40,7 @@ async function main() {
 
   while (true) {
     try {
-      // Poll Google Calendar triggers every 30 seconds (15 loop iterations)
+
       pollCounter++;
       if (pollCounter >= 15) {
         pollCounter = 0;
@@ -70,7 +68,6 @@ async function main() {
 
         console.log(`[Processor] Dispatched ${pendingRows.length} message(s) to Kafka topic '${TOPIC_NAME}'`);
 
-        // Delete processed records
         await client.zapRunOutbox.deleteMany({
           where: {
             id: {

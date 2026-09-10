@@ -1,14 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 
-/**
- * Google Calendar Poller Service
- * Checks Google Calendar for recurring events (e.g. Sunday Weekly AI Digest)
- * and creates ZapRun + ZapRunOutbox records to trigger the workflow.
- */
-
 export async function pollGoogleCalendarTriggers(client: PrismaClient) {
   try {
-    // 1. Find all active Zaps with a google-calendar trigger
+
     const calendarZaps = await client.zap.findMany({
       where: {
         trigger: {
@@ -30,7 +24,7 @@ export async function pollGoogleCalendarTriggers(client: PrismaClient) {
     }
 
     const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = Sunday
+    const dayOfWeek = now.getDay();
     const isSunday = dayOfWeek === 0;
 
     for (const zap of calendarZaps) {
@@ -39,10 +33,8 @@ export async function pollGoogleCalendarTriggers(client: PrismaClient) {
       const recurrenceDay = metadata.recurrenceDay || "Sunday";
       const targetDayNumber = recurrenceDay.toLowerCase() === "sunday" ? 0 : 0;
 
-      // Check if we should poll today
       const isTargetDay = dayOfWeek === targetDayNumber;
 
-      // Check if already executed today to avoid duplicate trigger runs
       const lastRun = zap.zapRuns[0];
       if (lastRun) {
         const lastRunDate = new Date(lastRun.createdAt);
@@ -52,12 +44,11 @@ export async function pollGoogleCalendarTriggers(client: PrismaClient) {
           lastRunDate.getDate() === now.getDate();
 
         if (isSameDay) {
-          // Already ran today
+
           continue;
         }
       }
 
-      // If user provided a Google Calendar OAuth access token or service credentials:
       const accessToken = metadata.accessToken || process.env.GOOGLE_CALENDAR_ACCESS_TOKEN;
       const calendarId = encodeURIComponent(metadata.calendarId || "primary");
 
@@ -96,7 +87,7 @@ export async function pollGoogleCalendarTriggers(client: PrismaClient) {
           console.error(`[Poller] Error polling Google Calendar API for Zap ${zap.id}:`, err);
         }
       } else {
-        // Simulation mode: Fired on target recurrence day (e.g. Sunday)
+
         if (isTargetDay) {
           eventDetected = true;
           console.log(`[Poller] (Simulation) Target recurrence day (${recurrenceDay}) matched for Zap ${zap.id}`);

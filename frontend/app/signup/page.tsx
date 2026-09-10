@@ -54,7 +54,7 @@ export default function Signup() {
       <Appbar />
       <main className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-3xl border border-slate-200/80 shadow-xl overflow-hidden">
-          {/* Left Brand Feature Column */}
+          {}
           <div className="md:w-1/2 bg-slate-900 text-white p-8 md:p-12 flex flex-col justify-between">
             <div>
               <div className="inline-block px-3 py-1 bg-orange-500/20 text-[#ff4f00] text-xs font-bold rounded-full mb-6 uppercase tracking-wider">
@@ -84,7 +84,7 @@ export default function Signup() {
             </div>
           </div>
 
-          {/* Right Form Column */}
+          {}
           <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Create your account</h3>
             <p className="text-sm text-slate-500 mb-6">

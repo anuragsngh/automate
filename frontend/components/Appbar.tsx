@@ -26,7 +26,7 @@ export function Appbar() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3.5">
-        {/* Brand Logo */}
+        {}
         <Link href="/" className="flex items-center space-x-2.5 text-2xl font-extrabold tracking-tight">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#ff4f00] text-white shadow-sm">
             <Zap className="w-5 h-5 fill-current" />
@@ -36,7 +36,7 @@ export function Appbar() {
           </span>
         </Link>
 
-        {/* Center / Navigation items */}
+        {}
         <nav className="hidden md:flex items-center space-x-2">
           {isLoggedIn && (
             <>
@@ -62,7 +62,7 @@ export function Appbar() {
           )}
         </nav>
 
-        {/* Right CTA / Auth state */}
+        {}
         <div className="flex items-center space-x-3">
           {isLoggedIn ? (
             <>

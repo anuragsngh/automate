@@ -5,7 +5,6 @@ const prismaClient = new PrismaClient();
 async function main() {
   console.log("Seeding database...");
 
-  // Seed Available Triggers
   await prismaClient.availableTrigger.upsert({
     where: { id: "webhook" },
     update: {
@@ -32,16 +31,14 @@ async function main() {
     }
   });
 
-  // Clean up removed actions if existing
   try {
     await prismaClient.availableAction.deleteMany({
       where: { id: "send-sol" }
     });
   } catch (err) {
-    // Ignore if not present or in use by legacy zaps
+
   }
 
-  // Seed Available Actions
   await prismaClient.availableAction.upsert({
     where: { id: "email" },
     update: {

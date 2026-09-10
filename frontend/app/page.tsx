@@ -10,7 +10,7 @@ export default function Home() {
       <main className="flex-1">
         <Hero />
 
-        {/* Features section */}
+        {}
         <section className="max-w-6xl mx-auto px-6 py-16">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-4">

@@ -48,7 +48,6 @@ export default function CreateZap() {
       return;
     }
 
-    // Fetch available triggers and actions
     axios
       .get(`${BACKEND_URL}/api/v1/trigger/available`)
       .then((res) => {
@@ -132,7 +131,7 @@ export default function CreateZap() {
     <div className="flex flex-col min-h-screen bg-slate-100">
       <Appbar />
 
-      {/* Action Top bar */}
+      {}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-14 z-30 shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-slate-900">Workflow Builder</h2>
@@ -147,10 +146,10 @@ export default function CreateZap() {
         </PrimaryButton>
       </div>
 
-      {/* Visual Canvas */}
+      {}
       <main className="flex-1 flex flex-col items-center justify-start py-12 px-6">
         <div className="flex flex-col items-center w-full max-w-xl">
-          {/* Step 1: Trigger Node */}
+          {}
           <div className="flex flex-col items-center">
             <ZapCell
               index={1}
@@ -161,7 +160,7 @@ export default function CreateZap() {
             <div className="connector-line my-3" />
           </div>
 
-          {/* Action Nodes */}
+          {}
           {selectedActions.map((action, idx) => (
             <div key={idx} className="flex flex-col items-center">
               <ZapCell
@@ -174,7 +173,7 @@ export default function CreateZap() {
             </div>
           ))}
 
-          {/* Add Action Button Node */}
+          {}
           <button
             onClick={addActionSlot}
             className="flex items-center justify-center gap-2 w-48 py-3 bg-white hover:bg-orange-50 text-slate-700 hover:text-[#ff4f00] border-2 border-dashed border-slate-300 hover:border-[#ff4f00] rounded-2xl font-semibold text-sm transition-all duration-200 shadow-sm"
@@ -184,7 +183,7 @@ export default function CreateZap() {
         </div>
       </main>
 
-      {/* Configure Step Modal */}
+      {}
       {selectedModalIndex !== null && (
         <ConfigureModal
           index={selectedModalIndex}
@@ -255,7 +254,6 @@ function ConfigureModal({
   );
   const [selectedApp, setSelectedApp] = useState<AvailableItem | null>(currentApp);
 
-  // Field states for Trigger (Google Calendar)
   const [calendarEventTitle, setCalendarEventTitle] = useState(
     currentMetadata.eventTitle || "Weekly AI Digest"
   );
@@ -264,13 +262,11 @@ function ConfigureModal({
   );
   const [calendarId, setCalendarId] = useState(currentMetadata.calendarId || "primary");
 
-  // Field states for Action (AI Agent)
   const [aiTopic, setAiTopic] = useState(
     currentMetadata.topic || "Trending AI breakthroughs, model releases, and research from past week"
   );
   const [aiDepth, setAiDepth] = useState(currentMetadata.depth || "comprehensive");
 
-  // Field states for Action (Email)
   const [emailTo, setEmailTo] = useState(currentMetadata.email || currentMetadata.to || "");
   const [emailSubject, setEmailSubject] = useState(
     currentMetadata.subject || "Weekly AI News Digest — {event.summary}"
@@ -282,7 +278,7 @@ function ConfigureModal({
   const handleSelectApp = (item: AvailableItem) => {
     setSelectedApp(item);
     if (item.id === "webhook") {
-      // Webhook requires no upfront fields
+
       onSelect({
         id: item.id,
         name: item.name,
@@ -334,7 +330,7 @@ function ConfigureModal({
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        {/* Modal Header */}
+        {}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
           <div>
             <span className="text-xs font-bold text-[#ff4f00] uppercase tracking-wider">
@@ -354,7 +350,7 @@ function ConfigureModal({
           </button>
         </div>
 
-        {/* Modal Body */}
+        {}
         <div className="p-6 max-h-[80vh] overflow-y-auto">
           {step === "choose_app" ? (
             <div className="space-y-3">
@@ -387,7 +383,7 @@ function ConfigureModal({
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Google Calendar Trigger Configuration */}
+              {}
               {selectedApp?.id === "google-calendar" && (
                 <div className="space-y-4">
                   <div className="p-3 bg-blue-50 border border-blue-200 text-blue-900 rounded-xl text-xs flex items-start gap-2">
@@ -430,7 +426,7 @@ function ConfigureModal({
                 </div>
               )}
 
-              {/* AI Agent Action Configuration */}
+              {}
               {selectedApp?.id === "ai-agent" && (
                 <div className="space-y-4">
                   <div className="p-3 bg-purple-50 border border-purple-200 text-purple-900 rounded-xl text-xs flex items-start gap-2">
@@ -469,10 +465,10 @@ function ConfigureModal({
                 </div>
               )}
 
-              {/* Email Action Configuration */}
+              {}
               {selectedApp?.id === "email" && (
                 <div className="space-y-4">
-                  {/* Dynamic tag hint banner */}
+                  {}
                   <div className="p-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-xs">
                     <div className="flex items-center gap-1.5 font-semibold mb-1">
                       <HelpCircle className="w-4 h-4 text-amber-600" />
@@ -533,7 +529,7 @@ function ConfigureModal({
                 </div>
               )}
 
-              {/* Actions Footer */}
+              {}
               <div className="flex items-center justify-between pt-4 border-t border-slate-200">
                 <SecondaryButton onClick={() => setStep("choose_app")}>
                   Change App

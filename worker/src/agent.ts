@@ -1,9 +1,3 @@
-/**
- * AI Agent Researcher for Automate
- * Scrapes/gathers live trending artificial intelligence information and
- * synthesizes a structured, readable weekly digest for email dispatch.
- */
-
 export interface AIAgentOptions {
   topic?: string;
   depth?: "concise" | "detailed";
@@ -20,7 +14,6 @@ export async function runAIAgentNewsSummary(
 
   console.log(`[AI Agent] Starting research agent for topic: "${topic}"...`);
 
-  // 1. If Gemini API key is configured, use Gemini with Google Search Grounding
   if (geminiKey) {
     try {
       console.log(`[AI Agent] Querying Gemini with Search Grounding...`);
@@ -71,7 +64,6 @@ Format the output as a polished, high-quality Weekly Digest in Markdown with:
     }
   }
 
-  // 2. If Anthropic Claude API key is configured
   if (anthropicKey) {
     try {
       console.log(`[AI Agent] Querying Anthropic Claude API...`);
@@ -107,7 +99,6 @@ Format the output as a polished, high-quality Weekly Digest in Markdown with:
     }
   }
 
-  // 3. Fallback / Simulation Mode (Zero setup required for local dev & testing)
   console.log(`[AI Agent] (Simulation Mode) No external LLM key provided. Generating curated intelligence digest...`);
   const currentDate = new Date().toLocaleDateString("en-US", {
     month: "long",

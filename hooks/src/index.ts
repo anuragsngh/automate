@@ -3,7 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 
-// Reloaded config with 127.0.0.1
 dotenv.config();
 
 const client = new PrismaClient();
@@ -14,13 +13,10 @@ const PORT = process.env.PORT || 3002;
 app.use(cors());
 app.use(express.json());
 
-// Health check
 app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "hooks" });
 });
 
-// Catch webhook trigger
-// Example: POST /hooks/catch/:userId/:zapId
 app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
   const { userId, zapId } = req.params;
   const body = req.body;
@@ -39,7 +35,6 @@ app.post("/hooks/catch/:userId/:zapId", async (req, res) => {
       });
     }
 
-    // Atomically store new trigger run and outbox event
     const run = await client.$transaction(async (tx) => {
       const zapRun = await tx.zapRun.create({
         data: {

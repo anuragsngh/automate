@@ -8,7 +8,6 @@ import { JWT_PASSWORD } from "../config";
 
 const router = Router();
 
-// Signup
 router.post("/signup", async (req, res) => {
   const body = req.body;
   const parsedData = SignupSchema.safeParse(body);
@@ -60,7 +59,6 @@ router.post("/signup", async (req, res) => {
   });
 });
 
-// Signin
 router.post("/signin", async (req, res) => {
   const body = req.body;
   const parsedData = SigninSchema.safeParse(body);
@@ -89,7 +87,6 @@ router.post("/signin", async (req, res) => {
     user.password
   );
 
-  // Fallback in case old plain-text passwords exist
   const isPlainMatch = user.password === parsedData.data.password;
 
   if (!isPasswordValid && !isPlainMatch) {
@@ -115,7 +112,6 @@ router.post("/signin", async (req, res) => {
   });
 });
 
-// Get Current User Profile
 router.get("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
   const id = req.id;
 

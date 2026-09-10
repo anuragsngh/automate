@@ -1,4 +1,4 @@
-// Prisma schema file for Hooks service
+
 
 generator client {
   provider = "prisma-client-js"

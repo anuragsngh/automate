@@ -133,7 +133,7 @@ export default function ZapDetail() {
 
       await axios.post(webhookUrl, parsedBody);
       setTestStatus("success");
-      // Refresh zap details after short delay
+
       setTimeout(() => fetchZap(), 1500);
     } catch (err: any) {
       console.error("Error triggering test webhook:", err);
@@ -148,7 +148,7 @@ export default function ZapDetail() {
       <Appbar />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-6 py-10">
-        {/* Back Link */}
+        {}
         <button
           onClick={() => router.push("/dashboard")}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 mb-6 transition-colors"
@@ -173,7 +173,7 @@ export default function ZapDetail() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* Top Overview Card */}
+            {}
             <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
                 <div>
@@ -206,13 +206,13 @@ export default function ZapDetail() {
                 </div>
               </div>
 
-              {/* Workflow Pipeline Visual */}
+              {}
               <div className="pt-6">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">
                   Execution Sequence
                 </h4>
                 <div className="flex flex-wrap items-center gap-3">
-                  {/* Trigger Node */}
+                  {}
                   <div className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-2xl">
                     <img
                       src={zap.trigger?.type?.image}
@@ -251,9 +251,9 @@ export default function ZapDetail() {
               </div>
             </div>
 
-            {/* Test Trigger & Run Section */}
+            {}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Test Webhook Card */}
+              {}
               <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -300,7 +300,7 @@ export default function ZapDetail() {
                 </div>
               </div>
 
-              {/* Execution History */}
+              {}
               <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="w-5 h-5 text-slate-700" />

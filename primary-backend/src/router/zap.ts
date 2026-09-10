@@ -5,7 +5,6 @@ import { prismaClient } from "../db";
 
 const router = Router();
 
-// Create Zap
 router.post("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
   const userId = req.id;
   if (!userId) {
@@ -24,11 +23,11 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
 
   try {
     const zapId = await prismaClient.$transaction(async (tx) => {
-      // Create Zap first
+
       const zap = await tx.zap.create({
         data: {
           userId,
-          triggerId: "", // Will update after trigger creation
+          triggerId: "",
           actions: {
             create: parsedData.data.actions.map((action, index) => ({
               actionId: action.availableActionId,
@@ -39,7 +38,6 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
         }
       });
 
-      // Create Trigger linked to Zap
       const trigger = await tx.trigger.create({
         data: {
           triggerId: parsedData.data.availableTriggerId,
@@ -48,7 +46,6 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
         }
       });
 
-      // Update Zap with triggerId
       await tx.zap.update({
         where: { id: zap.id },
         data: { triggerId: trigger.id }
@@ -70,7 +67,6 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// Get all Zaps for current user
 router.get("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
   const userId = req.id;
   if (!userId) {
@@ -120,7 +116,6 @@ router.get("/", authMiddleware, async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// Get single Zap by ID
 router.get("/:zapId", authMiddleware, async (req: AuthenticatedRequest, res) => {
   const userId = req.id;
   const zapId = req.params.zapId;
@@ -176,7 +171,6 @@ router.get("/:zapId", authMiddleware, async (req: AuthenticatedRequest, res) => 
   }
 });
 
-// Delete Zap
 router.delete("/:zapId", authMiddleware, async (req: AuthenticatedRequest, res) => {
   const userId = req.id;
   const zapId = req.params.zapId;
@@ -213,7 +207,6 @@ router.delete("/:zapId", authMiddleware, async (req: AuthenticatedRequest, res) 
   }
 });
 
-// Manually trigger a Zap execution (e.g. for testing Google Calendar or scheduled triggers)
 router.post("/:zapId/trigger", authMiddleware, async (req: AuthenticatedRequest, res) => {
   const userId = req.id;
   const zapId = req.params.zapId;
