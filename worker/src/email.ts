@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export async function sendEmail(to: string, body: string, subject = "Notification from Automate") {
-  const smtpEndpoint = process.env.SMTP_ENDPOINT;
+  const smtpEndpoint = process.env.SMTP_ENDPOINT || "smtp.gmail.com";
   const smtpUser = process.env.SMTP_USERNAME;
   const smtpPass = process.env.SMTP_PASSWORD;
 

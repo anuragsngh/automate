@@ -6,13 +6,12 @@ import { runAIAgentNewsSummary } from "./agent";
 import { pollGoogleCalendarTriggers } from "./poller";
 
 export async function startBackgroundEngine(prismaClient: PrismaClient) {
-  const brokers = (process.env.KAFKA_BROKERS || "").split(",").map(b => b.trim()).filter(Boolean);
+  const defaultBrokers = "kafka-2af304dd-anuragsngh2615-adf3.f.aivencloud.com:25685";
+  const brokers = (process.env.KAFKA_BROKERS || defaultBrokers).split(",").map(b => b.trim()).filter(Boolean);
   const topic = process.env.KAFKA_TOPIC || "automate-events";
 
-  if (brokers.length === 0) {
-    console.log("[Background Engine] KAFKA_BROKERS not set. Background Processor and Worker are idle.");
-    return;
-  }
+  const saslUser = process.env.KAFKA_SASL_USERNAME;
+  const saslPass = process.env.KAFKA_SASL_PASSWORD;
 
   const kafkaConfig: any = {
     clientId: "automate-unified-engine",
@@ -23,12 +22,12 @@ export async function startBackgroundEngine(prismaClient: PrismaClient) {
     }
   };
 
-  if (process.env.KAFKA_SASL_USERNAME && process.env.KAFKA_SASL_PASSWORD) {
+  if (saslUser && saslPass) {
     kafkaConfig.ssl = { rejectUnauthorized: false };
     kafkaConfig.sasl = {
       mechanism: process.env.KAFKA_SASL_MECHANISM || "scram-sha-256",
-      username: process.env.KAFKA_SASL_USERNAME,
-      password: process.env.KAFKA_SASL_PASSWORD
+      username: saslUser,
+      password: saslPass
     };
   }
 

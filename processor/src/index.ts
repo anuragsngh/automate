@@ -15,7 +15,8 @@ http.createServer((req, res) => {
 });
 
 const TOPIC_NAME = process.env.KAFKA_TOPIC || "automate-events";
-const BROKERS = (process.env.KAFKA_BROKERS || "localhost:9092").split(",");
+const defaultBrokers = "kafka-2af304dd-anuragsngh2615-adf3.f.aivencloud.com:25685";
+const BROKERS = (process.env.KAFKA_BROKERS || defaultBrokers).split(",");
 
 const client = new PrismaClient();
 
