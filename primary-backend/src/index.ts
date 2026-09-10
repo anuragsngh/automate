@@ -7,6 +7,7 @@ import { actionRouter } from "./router/action";
 import { PORT } from "./config";
 import { prismaClient } from "./db";
 import { startBackgroundEngine } from "./worker/runner";
+import { sendEmail } from "./worker/email";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -18,6 +19,12 @@ app.use(express.json());
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "primary-backend" });
+});
+
+app.get("/test-email", async (req, res) => {
+  const to = (req.query.to as string) || "2615anuragsngh@gmail.com";
+  const result = await sendEmail(to, `Live test verification at ${new Date().toISOString()}`, "Live Automate Cloud Test");
+  res.json({ result, timestamp: new Date().toISOString() });
 });
 
 app.use("/api/v1/user", userRouter);

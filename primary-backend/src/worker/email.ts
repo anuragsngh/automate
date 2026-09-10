@@ -40,7 +40,9 @@ export async function sendEmail(to: string, body: string, subject = "Notificatio
     });
 
     console.log(`[Worker Email] Email sent successfully! MessageId: ${info.messageId}`);
+    return { success: true, messageId: info.messageId, to, subject };
   } catch (error) {
     console.error(`[Worker Email] Error sending email:`, error);
+    return { success: false, error: String(error) };
   }
 }
