@@ -1,11 +1,11 @@
 import nodemailer from "nodemailer";
 
 export async function sendEmail(to: string, body: string, subject = "Notification from Automate") {
-  const smtpEndpoint = process.env.SMTP_ENDPOINT || "smtp.gmail.com";
-  const smtpUser = process.env.SMTP_USERNAME;
-  const smtpPass = process.env.SMTP_PASSWORD;
+  const smtpEndpoint = (process.env.SMTP_ENDPOINT || "smtp.gmail.com").trim();
+  const smtpUser = (process.env.SMTP_USERNAME || "anuragsngh2615@gmail.com").trim();
+  const smtpPass = (process.env.SMTP_PASSWORD || "").replace(/['"]/g, "").trim();
 
-  console.log(`[Worker Email] Sending email -> To: "${to}", Subject: "${subject}"`);
+  console.log(`[Worker Email] Sending email -> To: "${to}", Subject: "${subject}", User: "${smtpUser}", Pass configured: ${Boolean(smtpPass)}`);
 
   if (!smtpUser || !smtpPass) {
     console.log(`[Worker Email] (Simulation Mode) SMTP credentials not fully configured. Email recorded successfully.`);
