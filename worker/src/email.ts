@@ -1,5 +1,10 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import dns from "node:dns";
+
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch {}
 
 dotenv.config();
 
@@ -15,8 +20,36 @@ export async function sendEmail(to: string, body: string, subject = "Notificatio
     return;
   }
 
-  const resendKey = (process.env.RESEND_API_KEY || "").trim();
+  const brevoKey = (process.env.BREVO_API_KEY || "").trim();
+  if (brevoKey) {
+    try {
+      console.log(`[Worker Email] Sending email via Brevo HTTP API to "${to}"...`);
+      const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "api-key": brevoKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          sender: { name: "Automate", email: smtpUser },
+          to: [{ email: to }],
+          subject,
+          textContent: body
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        console.log(`[Worker Email] Email sent successfully via Brevo! ID: ${data.messageId}`);
+        return { success: true, messageId: data.messageId, provider: "brevo", to, subject };
+      } else {
+        console.error(`[Worker Email] Brevo error:`, data);
+      }
+    } catch (err) {
+      console.error(`[Worker Email] Brevo HTTP failed:`, err);
+    }
+  }
 
+  const resendKey = (process.env.RESEND_API_KEY || "").trim();
   if (resendKey) {
     try {
       console.log(`[Worker Email] Sending email via Resend HTTP API to "${to}"...`);
@@ -39,12 +72,10 @@ export async function sendEmail(to: string, body: string, subject = "Notificatio
         console.log(`[Worker Email] Email sent successfully via Resend! ID: ${data.id}`);
         return { success: true, messageId: data.id, provider: "resend", to, subject };
       } else {
-        console.error(`[Worker Email] Resend error:`, data);
-        return { success: false, provider: "resend", error: data, to, subject };
+        console.warn(`[Worker Email] Resend error (e.g. unverified recipient):`, data);
       }
     } catch (err) {
       console.error(`[Worker Email] Resend HTTP failed:`, err);
-      return { success: false, provider: "resend", error: String(err), to, subject };
     }
   }
 
