@@ -15,7 +15,7 @@ export async function sendEmail(to: string, body: string, subject = "Notificatio
     return;
   }
 
-  const resendKey = process.env.RESEND_API_KEY;
+  const resendKey = (process.env.RESEND_API_KEY || "").trim();
 
   if (resendKey) {
     try {
@@ -40,9 +40,11 @@ export async function sendEmail(to: string, body: string, subject = "Notificatio
         return { success: true, messageId: data.id, provider: "resend", to, subject };
       } else {
         console.error(`[Worker Email] Resend error:`, data);
+        return { success: false, provider: "resend", error: data, to, subject };
       }
     } catch (err) {
       console.error(`[Worker Email] Resend HTTP failed:`, err);
+      return { success: false, provider: "resend", error: String(err), to, subject };
     }
   }
 
