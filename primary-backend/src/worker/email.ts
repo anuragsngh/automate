@@ -13,24 +13,17 @@ export async function sendEmail(to: string, body: string, subject = "Notificatio
   }
 
   try {
-    const isGmail = (smtpEndpoint && smtpEndpoint.includes("gmail")) || (smtpUser && smtpUser.includes("@gmail.com"));
-    const transport = isGmail
-      ? nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: smtpUser,
-            pass: smtpPass
-          }
-        })
-      : nodemailer.createTransport({
-          host: smtpEndpoint || "smtp.gmail.com",
-          port: 587,
-          secure: false,
-          auth: {
-            user: smtpUser,
-            pass: smtpPass
-          }
-        });
+    const transport = nodemailer.createTransport({
+      host: smtpEndpoint || "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      family: 4,
+      auth: {
+        user: smtpUser,
+        pass: smtpPass
+      }
+    } as any);
 
     const info = await transport.sendMail({
       from: `"Automate" <${smtpUser}>`,
